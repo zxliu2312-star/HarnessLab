@@ -1,0 +1,47 @@
+stages:
+  - test
+  - lint
+  - build
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip/
+
+unit-test:
+  stage: test
+  image: python:3.12-slim
+  before_script:
+    - pip install --quiet -r requirements.txt
+  script:
+    - python -m pytest tests/ -v --tb=short
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+
+demo:
+  stage: test
+  image: python:3.12-slim
+  before_script:
+    - pip install --quiet -r requirements.txt
+  script:
+    - python demo/demo_mechanisms.py
+
+lint:
+  stage: lint
+  image: python:3.12-slim
+  before_script:
+    - pip install --quiet pyflakes
+  script:
+    - python -m pyflakes harness/ ui/ demo/
+  allow_failure: true
+
+build-docker:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  needs: [unit-test]
+  script:
+    - docker build -t coding-agent-harness .
+  allow_failure: true
