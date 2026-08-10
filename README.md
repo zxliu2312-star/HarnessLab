@@ -58,10 +58,16 @@ Key lookup order: system keychain → `OPENAI_API_KEY` env var → error.
 
 ```bash
 export OPENAI_API_KEY=sk-...
-export OPENAI_BASE_URL=https://api.deepseek.com
-export OPENAI_MODEL=deepseek-chat
+export OPENAI_BASE_URL=https://njusehub.info/v1
+export OPENAI_MODEL=DeepSeek-V3
 streamlit run ui/app.py
 ```
+
+## Live Demo
+
+**Deployed:** https://coding-agentharness.onrender.com
+
+> Note: Free tier sleeps after 15 min inactivity. First request may take ~30s to wake up.
 
 ## Render Deployment
 

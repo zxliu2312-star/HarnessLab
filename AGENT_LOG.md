@@ -42,7 +42,7 @@
 **触发技能：** writing-plans
 
 **关键内容：**
-- 共 N 个 Task（待填写实际数量）
+- 共 10 个 Task
 - 每个 Task 包含完整测试代码、实现代码、验证命令
 - 全程使用 MockLM，无需网络即可运行所有单元测试
 
@@ -52,13 +52,13 @@
 
 <!-- 以下为实现阶段模板，每完成一个 Task 填写一条 -->
 
-## 2026-08-XX | Task 1: 数据模型
+## 2026-08-09 | Task 1: 数据模型
 
 **触发技能：** subagent-driven-development / executing-plans
 
 **Subagent：** [记录使用的模型]
 
-**Commit hash：** [填写]
+**Commit hash：** 78bd173
 
 **测试结果：** pytest tests/test_models.py — X tests PASSED
 
@@ -68,9 +68,9 @@
 
 ---
 
-## 2026-08-XX | Task 2: LM 抽象层
+## 2026-08-09 | Task 2: LM 抽象层
 
-**Commit hash：** [填写]
+**Commit hash：** ad86594
 
 **测试结果：** pytest tests/test_lm.py — X tests PASSED
 
@@ -78,9 +78,9 @@
 
 ---
 
-## 2026-08-XX | Task 3: 代码执行器
+## 2026-08-09 | Task 3: 代码执行器
 
-**Commit hash：** [填写]
+**Commit hash：** 44c69e9
 
 **测试结果：** pytest tests/test_executor.py — X tests PASSED
 
@@ -88,9 +88,9 @@
 
 ---
 
-## 2026-08-XX | Task 4: 失败分类器
+## 2026-08-09 | Task 4: 失败分类器
 
-**Commit hash：** [填写]
+**Commit hash：** a104d87
 
 **测试结果：** pytest tests/test_classifier.py — X tests PASSED
 
@@ -98,9 +98,9 @@
 
 ---
 
-## 2026-08-XX | Task 5: 治理护栏
+## 2026-08-09 | Task 5: 治理护栏
 
-**Commit hash：** [填写]
+**Commit hash：** db61a00
 
 **测试结果：** pytest tests/test_guardrail.py — X tests PASSED
 
@@ -108,9 +108,9 @@
 
 ---
 
-## 2026-08-XX | Task 6: 记忆模块
+## 2026-08-09 | Task 6: 记忆模块
 
-**Commit hash：** [填写]
+**Commit hash：** e12d9cb
 
 **测试结果：** pytest tests/test_memory.py — X tests PASSED
 
@@ -118,9 +118,9 @@
 
 ---
 
-## 2026-08-XX | Task 7: Agent 主循环
+## 2026-08-09 | Task 7: Agent 主循环
 
-**Commit hash：** [填写]
+**Commit hash：** 8e04572
 
 **测试结果：** pytest tests/test_agent_loop.py — X tests PASSED
 
@@ -128,9 +128,9 @@
 
 ---
 
-## 2026-08-XX | Task 8: Streamlit UI + HITL
+## 2026-08-09 | Task 8: Streamlit UI + HITL
 
-**Commit hash：** [填写]
+**Commit hash：** bc22aa3
 
 **测试结果：** pytest tests/test_ui_hitl.py — X tests PASSED
 
@@ -138,9 +138,9 @@
 
 ---
 
-## 2026-08-XX | Task 9: CLI凭据管理
+## 2026-08-09 | Task 9: CLI凭据管理
 
-**Commit hash：** [填写]
+**Commit hash：** 5b6f6e6
 
 **测试结果：** [填写]
 
@@ -148,21 +148,21 @@
 
 ---
 
-## 2026-08-XX | Task 10: Demo 脚本
+## 2026-08-09 | Task 10: Demo 脚本
 
-**Commit hash：** [填写]
+**Commit hash：** 9833fd6
 
 **验证：** python demo/demo_mechanisms.py 全部通过
 
 ---
 
-## 2026-08-XX | Task 11: Docker + CI +部署
+## 2026-08-09 | Task 11: Docker + CI + 部署
 
-**Commit hash：** [填写]
+**Commit hash：** 802d011（文档）→ 946138b → f9adb56（部署修复）
 
 **验证：**
 - docker build 成功
 - .gitlab-ci.yml unit-test job PASSED
-- Render 公网 URL 可访问：[填写 URL]
+- Render 公网 URL 可访问：https://coding-agentharness.onrender.com
 
 ---
