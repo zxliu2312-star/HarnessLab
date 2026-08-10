@@ -152,7 +152,6 @@ def _resume_hitl(approved: bool, lm, output_placeholder):
     st.session_state["hitl_pending"] = False
 
     from harness.models import Action
-    import json
 
     payload = hitl_state.get("pending_action_payload", "")
     original_code = hitl_state.get("original_code", "")

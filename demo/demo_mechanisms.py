@@ -16,7 +16,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from harness.agent_loop import run
-from harness.executor import CodeExecutor
 from harness.guardrail import GuardrailResult, check
 from harness.lm import MockLM
 from harness.memory import MemoryStore
