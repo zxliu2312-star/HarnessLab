@@ -8,12 +8,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY harness/ harness/
 COPY ui/ ui/
 COPY demo/ demo/
+COPY .streamlit/ .streamlit/
 
 ENV PYTHONUNBUFFERED=1
 
-CMD streamlit run ui/app.py \
-    --server.port=${PORT:-8501} \
-    --server.address=0.0.0.0 \
-    --server.headless=true \
-    --server.fileWatcherType=none \
-    --browser.gatherUsageStats=false
+CMD streamlit run ui/app.py --server.port=${PORT:-8501} --server.address=0.0.0.0
