@@ -91,8 +91,8 @@ def main():
 
     # History
     st.divider()
-    with st.expander("Session History", expanded=False):
-        _render_history()
+    st.subheader("Session History")
+    _render_history()
 
 
 def _run_agent(code: str, lm, output_placeholder):
