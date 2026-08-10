@@ -42,3 +42,7 @@ Thumbs.db
 
 # Temp scripts
 fix_test.py
+
+# Dev tools and local references
+superpowers/
+.cursor/
