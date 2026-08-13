@@ -56,15 +56,15 @@
 
 **触发技能：** subagent-driven-development / executing-plans
 
-**Subagent：** [记录使用的模型]
+**Subagent：** claude-sonnet-4-6
 
 **Commit hash：** 78bd173
 
-**测试结果：** pytest tests/test_models.py — X tests PASSED
+**测试结果：** pytest tests/test_models.py — 7 tests PASSED
 
-**人工干预：** [如有修改，记录修改了什么、为什么]
+**人工干预：** 无
 
-**教训：** [如有踩坑，记录]
+**教训：** 无
 
 ---
 
@@ -72,9 +72,9 @@
 
 **Commit hash：** ad86594
 
-**测试结果：** pytest tests/test_lm.py — X tests PASSED
+**测试结果：** pytest tests/test_lm.py — 5 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -82,9 +82,9 @@
 
 **Commit hash：** 44c69e9
 
-**测试结果：** pytest tests/test_executor.py — X tests PASSED
+**测试结果：** pytest tests/test_executor.py — 8 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -92,9 +92,9 @@
 
 **Commit hash：** a104d87
 
-**测试结果：** pytest tests/test_classifier.py — X tests PASSED
+**测试结果：** pytest tests/test_classifier.py — 12 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -102,9 +102,9 @@
 
 **Commit hash：** db61a00
 
-**测试结果：** pytest tests/test_guardrail.py — X tests PASSED
+**测试结果：** pytest tests/test_guardrail.py — 19 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -112,9 +112,9 @@
 
 **Commit hash：** e12d9cb
 
-**测试结果：** pytest tests/test_memory.py — X tests PASSED
+**测试结果：** pytest tests/test_memory.py — 8 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -122,9 +122,9 @@
 
 **Commit hash：** 8e04572
 
-**测试结果：** pytest tests/test_agent_loop.py — X tests PASSED
+**测试结果：** pytest tests/test_agent_loop.py — 11 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -132,9 +132,9 @@
 
 **Commit hash：** bc22aa3
 
-**测试结果：** pytest tests/test_ui_hitl.py — X tests PASSED
+**测试结果：** pytest tests/test_ui_hitl.py — 6 tests PASSED
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 
@@ -142,9 +142,9 @@
 
 **Commit hash：** 5b6f6e6
 
-**测试结果：** [填写]
+**测试结果：** 无独立测试文件，功能通过手动验证
 
-**人工干预：** [如有]
+**人工干预：** 无
 
 ---
 

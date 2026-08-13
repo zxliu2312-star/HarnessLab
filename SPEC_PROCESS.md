@@ -470,3 +470,294 @@ MockLM 连续 4 次返回含相同 TypeError 的代码
 
 lzx:
 这节基本确认。两点修正：1. 演示③的 MockLM 响应次数改为 3 次（连续 3 轮相同 TypeError 即触发停机），与 agent_loop.py 判断条件严格对齐；2. 风险表补充一条"DeepSeek API 限速/余额不足"，缓解措施是 OpenAILM 捕获 RateLimitError 后向上抛出明确异常，主循环停机并在 UI 显示友好错误。确认后写入 SPEC.md。
+
+---
+
+冷启动验证：
+# 1. GPT系列
+GPT-5.6 Luna：
+已严格按照你提供的 SPEC + PLAN 实现 Task 1，没有引入额外字段、行为或依赖。数据模型的接口与 PLAN 中的定义一致；SPEC 也明确了这些模型通过 dataclass 在模块间通信。
+
+已创建：
+
+harness/__init__.py
+harness/models.py
+tests/test_models.py
+
+其中 FailureType 严格采用 SPEC/PLAN 中规定的 8 个枚举值。
+
+测试结果
+
+tests/test_models.py 共 5 个测试，全部通过：
+
+tests/test_models.py::test_action_fields PASSED
+tests/test_models.py::test_run_result_fields PASSED
+tests/test_models.py::test_failure_type_enum PASSED
+tests/test_models.py::test_loop_result_fields PASSED
+tests/test_models.py::test_failure_info_line_no_optional PASSED
+
+5 passed
+
+测试时需要使用 PYTHONPATH=.；直接运行 pytest 时当前环境的 pytest 没有把项目根目录加入模块搜索路径，这是测试环境行为，不是 Task 1 代码问题。
+
+文件已放在：
+
+/mnt/data/coding-agent-harness/
+
+我没有实现 Task 2 及后续任务，也没有自行扩展 Task 1 的模型行为。
+
+lzx人工行为: 把给我的压缩包解压到Z:\HarnessLab\cold_start_verify并把文件夹重命名为task1-harness-GPT-5.6 Luna
+
+# 2. Gemini系列
+Gemini 3.6 Flash：
+harness/__init__.py
+harness/models.py
+Python
+from __future__ import annotations
+from dataclasses import dataclass
+from enum import Enum
+from typing import Literal
+
+
+class FailureType(Enum):
+    SYNTAX_ERROR = "SYNTAX_ERROR"
+    NAME_ERROR = "NAME_ERROR"
+    TYPE_ERROR = "TYPE_ERROR"
+    IMPORT_ERROR = "IMPORT_ERROR"
+    RUNTIME_ERROR = "RUNTIME_ERROR"
+    TIMEOUT = "TIMEOUT"
+    ASSERTION_ERROR = "ASSERTION_ERROR"
+    UNKNOWN = "UNKNOWN"
+
+
+@dataclass
+class Action:
+    type: Literal["run_code", "write_file", "shell", "give_up"]
+    payload: str
+
+
+@dataclass
+class RunResult:
+    stdout: str
+    stderr: str
+    exit_code: int
+    elapsed: float
+    timed_out: bool
+
+
+@dataclass
+class FailureInfo:
+    type: FailureType
+    exception_class: str
+    message: str
+    line_no: int | None
+
+
+@dataclass
+class LoopResult:
+    status: Literal["success", "failed", "stall", "hitl_pause", "give_up"]
+    final_code: str | None
+    rounds: int
+    session_id: str
+
+
+@dataclass
+class RoundRecord:
+    round_no: int
+    failure_type: str
+    error_message: str
+    action_taken: str
+    guardrail_decision: str
+
+
+@dataclass
+class SessionSummary:
+    session_id: str
+    created_at: str
+    success: bool
+    rounds: int
+    failure_types: list[str]
+tests/test_models.py
+Python
+from harness.models import (
+    Action,
+    RunResult,
+    FailureInfo,
+    FailureType,
+    LoopResult,
+    RoundRecord,
+    SessionSummary,
+)
+
+
+def test_action_fields():
+    a = Action(type="run_code", payload="print(1)")
+    assert a.type == "run_code"
+    assert a.payload == "print(1)"
+
+
+def test_run_result_fields():
+    r = RunResult(stdout="hi", stderr="", exit_code=0, elapsed=0.1, timed_out=False)
+    assert r.exit_code == 0
+    assert not r.timed_out
+
+
+def test_failure_type_enum():
+    assert FailureType.SYNTAX_ERROR.value == "SYNTAX_ERROR"
+    assert len(list(FailureType)) == 8
+
+
+def test_loop_result_fields():
+    lr = LoopResult(status="success", final_code="print(1)", rounds=2, session_id="abc")
+    assert lr.status == "success"
+    assert lr.rounds == 2
+
+
+def test_failure_info_line_no_optional():
+    fi = FailureInfo(type=FailureType.UNKNOWN, exception_class="", message="", line_no=None)
+    assert fi.line_no is None
+
+
+def test_round_record_fields():
+    rr = RoundRecord(
+        round_no=1,
+        failure_type="SYNTAX_ERROR",
+        error_message="invalid syntax",
+        action_taken="run_code",
+        guardrail_decision="ALLOW",
+    )
+    assert rr.round_no == 1
+    assert rr.guardrail_decision == "ALLOW"
+
+
+def test_session_summary_fields():
+    ss = SessionSummary(
+        session_id="sess-123",
+        created_at="2026-08-10T00:00:00",
+        success=True,
+        rounds=3,
+        failure_types=["SYNTAX_ERROR", "NAME_ERROR"],
+    )
+    assert ss.session_id == "sess-123"
+    assert ss.success is True
+    assert len(ss.failure_types) == 2
+
+# 3. 豆包
+豆包 2.0 专家模型：
+Task 1 实现：数据模型模块
+1. harness/__init__.py
+空文件，用于将 harness 标记为 Python 包。
+2. harness/models.py
+包含所有数据结构定义：8 种错误类型枚举、6 个数据类，全部为无副作用的纯数据结构，支持模块间标准化通信。
+python
+运行
+from __future__ import annotations
+from dataclasses import dataclass
+from enum import Enum
+from typing import Literal
+
+
+class FailureType(Enum):
+    """代码执行失败的分类枚举，共8种错误类型"""
+    SYNTAX_ERROR = "SYNTAX_ERROR"
+    NAME_ERROR = "NAME_ERROR"
+    TYPE_ERROR = "TYPE_ERROR"
+    IMPORT_ERROR = "IMPORT_ERROR"
+    RUNTIME_ERROR = "RUNTIME_ERROR"
+    TIMEOUT = "TIMEOUT"
+    ASSERTION_ERROR = "ASSERTION_ERROR"
+    UNKNOWN = "UNKNOWN"
+
+
+@dataclass
+class Action:
+    """Agent 执行动作的统一封装"""
+    type: Literal["run_code", "write_file", "shell", "give_up"]
+    payload: str
+
+
+@dataclass
+class RunResult:
+    """代码执行器的运行结果输出"""
+    stdout: str
+    stderr: str
+    exit_code: int
+    elapsed: float
+    timed_out: bool
+
+
+@dataclass
+class FailureInfo:
+    """错误分类后的结构化信息，用于生成修复提示"""
+    type: FailureType
+    exception_class: str
+    message: str
+    line_no: int | None
+
+
+@dataclass
+class LoopResult:
+    """Agent 主循环最终执行结果"""
+    status: Literal["success", "failed", "stall", "hitl_pause", "give_up"]
+    final_code: str | None
+    rounds: int
+    session_id: str
+
+
+@dataclass
+class RoundRecord:
+    """单轮循环的记录，用于持久化到记忆模块"""
+    round_no: int
+    failure_type: str
+    error_message: str
+    action_taken: str
+    guardrail_decision: str
+
+
+@dataclass
+class SessionSummary:
+    """会话摘要，用于历史查询与上下文注入"""
+    session_id: str
+    created_at: str
+    success: bool
+    rounds: int
+    failure_types: list[str]
+3. tests/test_models.py
+单元测试文件，覆盖核心字段校验、枚举完整性、可选字段等验证点。
+python
+运行
+from harness.models import Action, RunResult, FailureInfo, FailureType, LoopResult, RoundRecord, SessionSummary
+
+
+def test_action_fields():
+    a = Action(type="run_code", payload="print(1)")
+    assert a.type == "run_code"
+    assert a.payload == "print(1)"
+
+
+def test_run_result_fields():
+    r = RunResult(stdout="hi", stderr="", exit_code=0, elapsed=0.1, timed_out=False)
+    assert r.exit_code == 0
+    assert not r.timed_out
+
+
+def test_failure_type_enum():
+    assert FailureType.SYNTAX_ERROR.value == "SYNTAX_ERROR"
+    assert len(list(FailureType)) == 8
+
+
+def test_loop_result_fields():
+    lr = LoopResult(status="success", final_code="print(1)", rounds=2, session_id="abc")
+    assert lr.status == "success"
+    assert lr.rounds == 2
+
+
+def test_failure_info_line_no_optional():
+    fi = FailureInfo(type=FailureType.UNKNOWN, exception_class="", message="", line_no=None)
+    assert fi.line_no is None
+验证方式
+在项目根目录执行测试命令：
+bash
+pytest tests/test_models.py -v
+预期输出：5 个测试全部通过（5 passed）。
+需要我继续实现 Task 2 的 LM 抽象层代码吗？

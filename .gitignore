@@ -37,9 +37,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Streamlit
-.streamlit/
-
 # Temp scripts
 fix_test.py
 

@@ -40,8 +40,14 @@ build-docker:
   stage: build
   image: docker:latest
   services:
-    - docker:dind
+    - name: docker:dind
+      variables:
+        DOCKER_TLS_CERTDIR: ""        # 禁用 TLS，让 dockerd 监听 2375 端口
+        DOCKER_DRIVER: overlay2      # 使用 overlay2 存储驱动
+  variables:
+    DOCKER_HOST: tcp://docker:2375    # 明确指定非 TLS 端口，与 dind 服务匹配
   needs: [unit-test]
   script:
+    - docker info                     # 先验证 daemon 是否可用，便于排查
     - docker build -t coding-agent-harness .
   allow_failure: true
