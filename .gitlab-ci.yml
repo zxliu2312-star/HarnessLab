@@ -71,7 +71,7 @@ build-docker:
   image: python:3.12-slim
   needs: [unit-test]
   script:
-    - pip install --no-cache-dir -r requirements.txt
+    - pip install --quiet -r requirements.txt
     - python -c "import streamlit; print('streamlit import OK')"
     - python -c "import harness; print('harness import OK')"
     - python -c "import ui; print('ui import OK')"
