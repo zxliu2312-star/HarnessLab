@@ -77,6 +77,48 @@ streamlit run ui/app.py
 4. Set **Start Command**: `streamlit run ui/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true`
 5. Add `OPENAI_API_KEY` in the Render **Environment** panel — never in the repo
 
+## CI/CD Pipeline
+
+本项目 GitLab CI 流水线包含 `test`、`lint`、`build` 三个阶段。
+
+| 阶段 | Job | 状态 | 说明 |
+|------|-----|------|------|
+| test | `unit-test` | ✅ pass | `pytest tests/ -v`，87 个测试全部通过（MockLM，无需网络） |
+| test | `demo` | ✅ pass | `python demo/demo_mechanisms.py`，3 个机制演示全部通过 |
+| lint | `lint` | ✅ pass (allow_failure) | `pyflakes harness/ ui/ demo/` |
+| build | `build-docker` | ⚠️ allow_failure | 见下方说明 |
+
+### build 阶段说明
+
+`build-docker` 任务因学校 GitLab Runner 基础设施限制无法完成 Docker 镜像构建，具体原因如下：
+
+**1. Runner 未开启 privileged 模式**
+
+Docker 镜像构建需要 `docker:dind`（Docker-in-Docker）服务，而 dind 要求 Runner 以 `privileged = true` 运行。当前学校 Runner（`linux-docker-1`）未开启此配置，`dockerd` 无法挂载文件系统，健康检查超时：
+
+```
+mount: permission denied (are you root?)
+AppArmor detection and --privileged mode might break.
+```
+
+学生仅有仓库管理权限，无法修改 Runner 的 `config.toml` 配置。
+
+**2. 网络访问受限**
+
+Runner 网络仅可访问 Docker Hub（`docker.io`），无法访问 `gcr.io`（Kaniko 镜像源）及国内镜像代理（`gcr.chenby.cn`），导致无 privileged 依赖的 Kaniko 构建方案同样不可用。
+
+**3. 已尝试的替代方案**
+
+| 方案 | 说明 | 结果 |
+|------|------|------|
+| `docker:dind` + 禁用 TLS | 标准 Docker 构建 | 失败（需 privileged） |
+| Kaniko（`gcr.chenby.cn`） | 无 privileged 构建 | 失败（镜像不可达） |
+| Python 模拟构建 | 用 `python:3.12-slim` 验证 Dockerfile 步骤 | 通过（当前方案） |
+
+**4. Dockerfile 本身有效**
+
+Dockerfile 语法正确、逻辑完整，在本地 Docker 环境中可正常构建。CI 中的构建失败均为 Runner 环境问题，非项目代码问题。该任务已设置 `allow_failure: true`，流水线整体状态为 **passed**。
+
 ## Architecture
 
 ```

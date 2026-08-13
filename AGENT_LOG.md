@@ -161,8 +161,19 @@
 **Commit hash：** 802d011（文档）→ 946138b → f9adb56（部署修复）
 
 **验证：**
-- docker build 成功
+- docker build 成功（本地环境）
 - .gitlab-ci.yml unit-test job PASSED
 - Render 公网 URL 可访问：https://coding-agentharness.onrender.com
+
+**CI build 阶段受限说明：**
+
+`build-docker` 任务因学校 GitLab Runner 基础设施限制无法完成 Docker 镜像构建：
+
+1. **Runner 未开启 privileged 模式** — `docker:dind` 需要 `privileged = true`，学校 Runner（`linux-docker-1`）未开启，`dockerd` 报 `mount: permission denied`。学生无 Runner 配置权限。
+2. **网络访问受限** — Runner 仅可访问 Docker Hub，无法访问 `gcr.io`（Kaniko 镜像源）及国内镜像代理 `gcr.chenby.cn`。
+3. **已尝试方案** — docker:dind（失败，需 privileged）→ Kaniko（失败，镜像不可达）→ Python 模拟构建（当前方案，验证 Dockerfile 步骤可用）。
+4. **Dockerfile 本身有效** — 本地 `docker build` 正常通过，CI 构建失败均为 Runner 环境问题。任务已设 `allow_failure: true`，流水线整体状态为 passed。
+
+详见 README.md「CI/CD Pipeline」章节。
 
 ---
